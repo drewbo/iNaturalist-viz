@@ -14,29 +14,27 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-.title {
+.background-image h1 {
+  padding-top: 50px;
   color: #fff;
 }
 .main {
-  position: fixed;
-  background-color: rgba(255,255,255,0.3);
-  top: 50%;
+  position: relative;
+  top: 20%;
   height: 50%;
-  width: 100%;
+  max-width: 700px;
+  background-color: rgba(255,255,255,0.3);
   padding: 30px;
 }
 </style>
 </head>
 <body>
   <div class="background-image">
-    <div class="container text-center title">
+    <div class="container text-center main">
     <h1>Sydney BioBlitz Visualizations</h1>
-    </div>
-  </div>
-  <div class="main">
-    <div class="col-md-3 text-center"><a href="barchart.html"><button type="button" class="btn btn-large btn-primary">Bar Charts!</button></a></div>
-    <div class="col-md-3 text-center"><a href="obs_over_time.html"><button type="button" class="btn btn-large btn-primary">Line Charts!</button></a></div>
-    <div class="col-md-3 text-center"><a href="photo.html"><button type="button" class="btn btn-large btn-primary">Photos!</button></a></div>
-    <div class="col-md-3 text-center"><a href="map.html"><button type="button" class="btn btn-large btn-primary">Maps!</button></a></div>
+    <a href="barchart.html"><button type="button" class="btn btn-large btn-primary">Bar Charts!</button></a>
+    <a href="obs_over_time.html"><button type="button" class="btn btn-large btn-primary">Line Charts!</button></a>
+    <a href="photo.html"><button type="button" class="btn btn-large btn-primary">Photos!</button></a>
+    <a href="map.html"><button type="button" class="btn btn-large btn-primary">Maps!</button></a>
   </div>
 </body>

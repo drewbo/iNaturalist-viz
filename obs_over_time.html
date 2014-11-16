@@ -31,14 +31,40 @@ body {
 }
 
 </style>
+<style>
+.background-image {
+  height: 100%;
+  width: 100%;
+
+  background: url('images/bg.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+.background-image h1 {
+  padding-top: 50px;
+  color: #fff;
+}
+.main {
+  position: relative;
+  height: 100%;
+  max-width: 1000px;
+  background-color: rgba(255,255,255,0.7);
+  padding: 30px;
+}
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 <body>
+  <div class="background-image">
+    <div class="container text-center main" id="viz">
+    </div>
+  </div>
 <script src="http://d3js.org/d3.v3.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script> 
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
 <script>
 
-var margin = {top: 20, right: 80, bottom: 30, left: 50},
+var margin = {top: 20, right: 100, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 550 - margin.top - margin.bottom;
 
 var parseDate = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse;
 
@@ -62,21 +88,21 @@ var yAxis = d3.svg.axis()
 
 var line = d3.svg.line()
     .interpolate("basis")
-    .x(function(d) { 
+    .x(function(d) {
       //console.log(d)
-      return x(d["roundDate"]); 
+      return x(d["roundDate"]);
     })
     .y(function(d) { return y(+d["cumulative"]); });
 
 
 var uniqueLine = d3.svg.line()
     .interpolate("basis")
-    .x(function(d) { 
-      return x(d["roundDate"]); 
+    .x(function(d) {
+      return x(d["roundDate"]);
     })
     .y(function(d) { return y(+d["cumulativeTaxa"]); });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#viz").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -106,7 +132,7 @@ d3.json("data/data.json", function(error, data) {
       lineData[d.roundDate].count++;
       if(lineData[d.roundDate].taxa.indexOf(d.taxon_id) == -1) {
         lineData[d.roundDate].taxa.push(d.taxon_id);
-      } 
+      }
     }
     else {lineData[d.roundDate] = {"roundDate":d.roundDate, "count":1, "cumulative":0,"taxa":[d.taxon_id],"cumulativeTaxa":0};}
   });
@@ -133,7 +159,7 @@ d3.json("data/data.json", function(error, data) {
 
 
   var totalObs = lineData[lineData.length-1].cumulative;
-  
+
 
   console.log(.01*totalObs)
 
@@ -171,7 +197,7 @@ d3.json("data/data.json", function(error, data) {
     .datum(lineData)
     .attr('d',function(d) {return line(d);})
     .attr("class", "line")
-  
+
   svg.append("text")
     .attr("transform", function(d) { return "translate(" + x(maxDate) + "," + y(totalObs) + ")"; })
     .attr("x", 3)

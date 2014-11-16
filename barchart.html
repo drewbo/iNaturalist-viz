@@ -22,14 +22,41 @@ body {
 }
 
 </style>
+<style>
+.background-image {
+  height: 100%;
+  width: 100%;
+
+  background: url('images/bg.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  margin: 0;
+}
+.background-image h1 {
+  padding-top: 50px;
+  color: #fff;
+}
+.main {
+  position: relative;
+  height: 100%;
+  max-width: 1000px;
+  background-color: rgba(255,255,255,0.7);
+  padding: 30px;
+}
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 <body>
+  <div class="background-image">
+    <div class="container text-center main" id="viz">
+    </div>
+  </div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
 <script>
 
  margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 550 - margin.top - margin.bottom;
 
 var x0 = d3.scale.ordinal()
     .rangeRoundBands([0, width], .1);
@@ -51,7 +78,7 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .tickFormat(d3.format(".2s"));
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#viz").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -133,3 +160,4 @@ d3.json("data/data.json", function(error, data) {
 });
 
 </script>
+</body>
