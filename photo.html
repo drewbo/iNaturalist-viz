@@ -1,0 +1,63 @@
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Syndey Bioblitz</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+<script type="text/javascript" src="js/jquery-photowall.js"></script>
+<link rel="stylesheet" type="text/css" href="css/jquery-photowall.css">
+<style>
+
+</style>
+</head>
+<body>
+<div id="gallery">
+        <div class="body">
+        </div>
+</div>
+
+<script>
+
+d3.json('data/data.json', function(error, data){
+
+    PhotoWall.init({
+        el:             '#gallery'               // Gallery element
+        ,zoom:          true                     // Use zoom
+        ,zoomAction:    'mouseenter'             // Zoom on action
+        ,zoomTimeout:   500                      // Timeout before zoom
+        ,zoomDuration:  100                      // Zoom duration time
+        ,showBox:       true                     // Enavle fullscreen mode
+        ,showBoxSocial: true                     // Show social buttons
+        ,padding:       10                       // padding between images in gallery
+        ,lineMaxHeight: 150                      // Max set height of pictures line
+                                                 // (may be little bigger due to resize to fit line)
+    });
+    console.log(data)
+    var photos = [], id = 0;
+
+    _.each(data, function(d){
+      if (d.photos.length){
+        var photoGroup = _.map(d.photos, function(p){
+          id++;
+          return obj = {
+            id: id - 1,
+            img: p.large_url,
+            width:500,
+            height:400,
+            th:{src: p.small_url ,width:50,height:40,
+                zoom_src: p.medium_url ,zoom_factor:2
+            }
+          }
+        })
+        photos.push(photoGroup);
+      }
+    })
+    console.log(_.flatten(photos))
+    PhotoWall.load(_.flatten(photos));
+});
+
+</script>
+</body>
+</html>
