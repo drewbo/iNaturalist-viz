@@ -179,6 +179,12 @@ d3.json("data/data.json", function(error, data) {
     .text("observations");
 
   svg.append("text")
+    .attr("transform", function(d) { return "translate(" + x(maxDate) + "," + y(totalObs) + ")"; })
+    .attr("dx", ".35em")
+    .attr("y", height-20)
+    .text("time (UTC)");
+
+  svg.append("text")
     .attr("transform", function(d) { return "translate(" + x(maxDate) + "," + y(uniqueObs) + ")"; })
     .attr("x", 3)
     .attr("dy", ".35em")
