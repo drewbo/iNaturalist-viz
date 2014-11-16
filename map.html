@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta charset=utf-8 />
-<title>External map layers</title>
+<title>Syndey Bioblitz</title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -19,11 +19,7 @@
 
 <script>
 L.mapbox.accessToken = 'pk.eyJ1IjoiZHJld2JvMTkiLCJhIjoiWlpRb2lYUSJ9.aT3CQyI2_wYzqKPDqjgvyw';
-var map = L.mapbox.map('map');
-
-var stamenLayer = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
-  attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
-}).addTo(map);
+var map = L.mapbox.map('map','drewbo19.k87i64ii');
 
 d3.json('data/data.json', function(error, data){
   var buckets = {},
@@ -44,12 +40,19 @@ d3.json('data/data.json', function(error, data){
     var circle = L.circleMarker( [bucket.lat, bucket.lon],
       { radius: Math.sqrt(bucket.count) * 5,
       stroke: true,
-      color: 'green',
-      weight:	2,
+      color: 'orange',
+      weight:	1,
       opacity:	1,
       fill:	true,
-      fillColor: 'red',
-      fillOpacity: 0.9 })
+      fillColor: 'orange',
+      fillOpacity: 0.5 })
+      .on('click', function(d){
+        console.log(d.latlng)
+        var popup = L.popup()
+        .setLatLng(d.latlng)
+        .setContent('<p>' + bucket.count + ' observations at (' + d.latlng.lat.toFixed(4) + ',' + d.latlng.lng.toFixed(4) + ')</p>')
+        .openOn(map);
+      })
     markers.push(circle);
   })
 
