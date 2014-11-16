@@ -23,6 +23,13 @@ body {
   stroke-width: 1.5px;
 }
 
+
+.uniqueline {
+  fill: none;
+  stroke: darkgreen;
+  stroke-width: 1.5px;
+}
+
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.js"></script>
@@ -59,7 +66,15 @@ var line = d3.svg.line()
       //console.log(d)
       return x(d["roundDate"]); 
     })
-    .y(function(d) { return y(+d["count"]); });
+    .y(function(d) { return y(+d["cumulative"]); });
+
+
+var uniqueLine = d3.svg.line()
+    .interpolate("basis")
+    .x(function(d) { 
+      return x(d["roundDate"]); 
+    })
+    .y(function(d) { return y(+d["cumulativeTaxa"]); });
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -85,21 +100,45 @@ d3.json("data/data.json", function(error, data) {
 
   var lineData = {};
 
+
   data.forEach(function(d){
     if (lineData[d.roundDate]) {
-      lineData[d.roundDate]++;
+      lineData[d.roundDate].count++;
+      if(lineData[d.roundDate].taxa.indexOf(d.taxon_id) == -1) {
+        lineData[d.roundDate].taxa.push(d.taxon_id);
+      } 
     }
-    else {lineData[d.roundDate] = 1;}
+    else {lineData[d.roundDate] = {"roundDate":d.roundDate, "count":1, "cumulative":0,"taxa":[d.taxon_id],"cumulativeTaxa":0};}
+  });
+
+
+
+  _.each(lineData, function(val, key) {
+    _.each(lineData, function(innerVal,innerKey) {
+      if(key >= innerKey) {
+        val.cumulative += innerVal.count;
+        val.taxa = val.taxa.concat(innerVal.taxa);
+      }
+    })
+    val.cumulativeTaxa = _.uniq(val.taxa).length
   })
 
-  var lineData = _.map(lineData, function(val, key){
-    return {"roundDate":key, "count":val};
+  lineData = _.map(lineData, function(obj){
+    return {"roundDate":obj["roundDate"], "count":obj["count"], "cumulative":obj["cumulative"], "cumulativeTaxa":obj["cumulativeTaxa"]};
   })
 
-console.log(lineData);
+  lineData = _.sortBy(lineData, function(obj) {
+    return obj["roundDate"]
+  })
+
+  var maxDate =  lineData[lineData.length-1].roundDate;
+  var totalObs = lineData[lineData.length-1].cumulative;
+  var uniqueObs = lineData[lineData.length-1].cumulativeTaxa;
+
+
+
 
   x.domain(d3.extent(lineData, function(d) { return d.roundDate; }));
-
   y.domain([0, data.length]);
 
   svg.append("g")
@@ -120,7 +159,29 @@ console.log(lineData);
   svg.append("path")
     .datum(lineData)
     .attr('d',function(d) {return line(d);})
+    .attr("class", "line")
+  
+  svg.append("text")
+    .attr("transform", function(d) { return "translate(" + x(maxDate) + "," + y(totalObs) + ")"; })
+    .attr("x", 3)
+    .attr("dy", ".35em")
+    .text("observations");
+
+  svg.append("text")
+    .attr("transform", function(d) { return "translate(" + x(maxDate) + "," + y(uniqueObs) + ")"; })
+    .attr("x", 3)
+    .attr("dy", ".35em")
+    .text("unique taxa");
+
+  svg.append("path")
+    .datum(lineData)
+    .attr('d',function(d) {return uniqueLine(d);})
+    .attr("class", "line")
+    .attr("class","uniqueline")
 
 });
+
+
+
 
 </script>
