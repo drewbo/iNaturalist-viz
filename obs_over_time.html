@@ -131,12 +131,23 @@ d3.json("data/data.json", function(error, data) {
     return obj["roundDate"]
   })
 
-  var maxDate =  lineData[lineData.length-1].roundDate;
+
   var totalObs = lineData[lineData.length-1].cumulative;
+  
+
+  console.log(.01*totalObs)
+
+  lineData = _.filter(lineData, function(d) {
+    return d.cumulative > .02*totalObs;
+  })
+
+  lineData = _.filter(lineData, function(d) {
+    return d.cumulative < .98*totalObs;
+  })
+
+  var maxDate =  lineData[lineData.length-1].roundDate;
   var uniqueObs = lineData[lineData.length-1].cumulativeTaxa;
-
-
-
+  totalObs = lineData[lineData.length-1].cumulative;
 
   x.domain(d3.extent(lineData, function(d) { return d.roundDate; }));
   y.domain([0, data.length]);
