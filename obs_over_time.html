@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script> 
+<script>
+
+var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var parseDate = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse;
+
+
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.category10();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var line = d3.svg.line()
+    .interpolate("basis")
+    .x(function(d) { 
+      //console.log(d)
+      return x(d["roundDate"]); 
+    })
+    .y(function(d) { return y(+d["count"]); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.json("data/data.json", function(error, data) {
+
+
+  //rounds evey datetime to nearest 15 minutes
+  //the 106 ensures that every minute between 52 and 59 is correctly rounded up to the next hour
+  data.forEach(function(d) {
+    var parsedDate = parseDate(d.created_at_utc);
+    d.roundDate = parsedDate;
+    d.roundDate.setHours(parsedDate.getHours() + Math.round(parsedDate.getMinutes()/106));
+    d.roundDate.setMinutes((Math.round(parsedDate.getMinutes()/15)-1)*15)
+    d.roundDate.setSeconds(0);
+
+  });
+
+
+
+  var lineData = {};
+
+  data.forEach(function(d){
+    if (lineData[d.roundDate]) {
+      lineData[d.roundDate]++;
+    }
+    else {lineData[d.roundDate] = 1;}
+  })
+
+  var lineData = _.map(lineData, function(val, key){
+    return {"roundDate":key, "count":val};
+  })
+
+console.log(lineData);
+
+  x.domain(d3.extent(lineData, function(d) { return d.roundDate; }));
+
+  y.domain([0, data.length]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Observations");
+
+  svg.append("path")
+    .datum(lineData)
+    .attr('d',function(d) {return line(d);})
+
+});
+
+</script>
